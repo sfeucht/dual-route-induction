@@ -21,8 +21,8 @@ Then I'll be able to suss out the
     (3) pure concept heads: high P(`on`) and low for everything else 
     (4) skip-ahead induction heads: high P(`on`) and high P(random_far)
 '''
+import json
 import os 
-import pickle 
 import argparse 
 import torch 
 import random 
@@ -34,8 +34,7 @@ from collections import defaultdict
 from nnsight import LanguageModel
 from datasets import load_dataset
 
-from utils import pile_chunk
-from attention_plots import get_l2_attn_weights, get_l3_attn_weights, get_olmo2_attn_weights, get_pythia_attn_weights
+from utils import pile_chunk, get_l2_attn_weights, get_l3_attn_weights, get_olmo2_attn_weights, get_pythia_attn_weights
 
 torch.set_grad_enabled(False)
 
@@ -199,8 +198,8 @@ def main(args):
     fname += '.pkl'
     print(path + fname)
 
-    with open(path + fname, 'wb') as f:
-        pickle.dump(results, f)
+    with open(path + fname, 'w') as f:
+        json.dump(results, f)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

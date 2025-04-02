@@ -11,7 +11,6 @@ Or alternatively the outputs of FV heads to change the language:
 '''
 import os 
 import ast 
-import pickle 
 import argparse 
 import nnsight 
 import random 
@@ -199,8 +198,8 @@ def main(args):
 
     ct = 0 
     for source_tokens, base_tokens, desired_answer, original_answer, fv_answer in dataset:
-        print('source', model.tokenizer.decode(source_tokens))
-        print('base', model.tokenizer.decode(base_tokens))
+        # print('source', model.tokenizer.decode(source_tokens))
+        # print('base', model.tokenizer.decode(base_tokens))
         print('desired', desired_answer)
         print('default', original_answer)
 
@@ -214,11 +213,10 @@ def main(args):
         # first we want to get the outputs of the heads to patch at end of the source prompt 
         source_run_dict = source_head_activations(model, source_tokens, heads_to_patch)
         _, generation = subbed_generation(model, base_tokens, heads_to_patch, source_run_dict, max_toks=LEN)
-        patched_desired_corr += generation_correct(model.tokenizer.decode(generation), desired_answer, prnt=(args.head_ordering == 'cf_nextnext'))
+        patched_desired_corr += generation_correct(model.tokenizer.decode(generation), desired_answer, prnt=(args.head_ordering == 'concept_copying'))
         patched_default_corr += generation_correct(model.tokenizer.decode(generation), original_answer, prnt=False)
         patched_fv_corr += generation_correct(model.tokenizer.decode(generation), fv_answer, prnt=(args.head_ordering == 'fv'))
 
-        ct += 1
         if ct >= args.max_n:
             break 
     

@@ -25,9 +25,8 @@ As discussed in the paper, we focus on token induction scores over random tokens
 ## Setup 
 If you want to run any of our code, this repo requires Python 3.10+ and PyTorch 2.6.0+. We use the `nnsight` package (v0.4.3) for all intervention experiments, which itself uses HuggingFace model implementations. Set up a virtual environment using `requirements.txt`:
 
-TODO test this
 ```bash
-python3.10 -m venv .env -r requirements.txt
+python3.11 -m venv .env -r requirements.txt
 source .env/bin/activate
 ```
 
