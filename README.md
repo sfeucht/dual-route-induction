@@ -40,16 +40,20 @@ We provide scripts for each of the major experiments in our work. Scripts should
 - e.g., to replicate Figure 11, you would run `python causal_scores.py --model meta-llama/Meta-Llama-3-8B`. 
 - e.g., to replicate Figure 12, you would run `python causal_scores.py --model meta-llama/Meta-Llama-3-8B --random_tok_entities`
 
-You can see the results of this script in `cache/causal_scores`. 
+You can see the results of this script in `cache/causal_scores`. Full results are saved as pickle files, but token or concept copying score are saved as separate json files. 
 
 ### Section 3: Attention Scores
-`scripts/attention_scores.py` calculates attention-based scores for individual heads [TODO]
+`scripts/attention_scores.py` calculates attention-based scores for individual heads. Just like the previous section, you must calculate next-token and last-token matching scores in two different runs.
+- e.g., to calculate the blue next-tok bars in Figure 4, run `python attention_scores.py --n 2048 --model meta-llama/Llama-2-7b-hf --random_tok_entities`
+- e.g., to calculate the red last-tok bars in Figure 4, run `python attention_scores.py --n 2048 --model meta-llama/Llama-2-7b-hf`
+
+Results are saved as json files in `cache/attention_scores`. 
 
 ### Section 4: Ablations
 `scripts/vocablist_ablation.py` runs and saves mean-ablation experiments for the top-*k* heads ranked by a particular score. To ablate, e.g., concept heads for a pre-set list of *k* values, you can run `python vocablist_ablation.py --task fr-en --head_ordering concept_copying --model allenai/OLMo-2-1124-7B`
 
 ### Section 5: Patching
-`scripts/language_patching.py` patches the top-*k* heads based on some ranking from one translation prompt to another, based on work from Dumas et al. (2025). You must run this script for each individual value of *k* you want to test, e.g., `python language_patching.py --source_from es --source_to it --base_from ja --base_to zh --head_ordering concept_copying --k 80`. 
+`scripts/language_patching.py` patches the top-*k* heads based on some ranking from one translation prompt to another, based on work from Dumas et al. (2025). You must run this script for each individual value of *k* you want to test: e.g. for k=80, run `python language_patching.py --source_from es --source_to it --base_from ja --base_to zh --head_ordering concept_copying --k 80`. 
 
 
 ## Data

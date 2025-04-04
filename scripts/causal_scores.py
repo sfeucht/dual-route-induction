@@ -297,7 +297,7 @@ def main(args):
     os.makedirs(path, exist_ok=True)
 
     copying_rankings = flat_to_ranking(diff)
-    with open(rank_path + f'{scoretype}_copying.json', 'w') as f:
+    with open(rank_path + f'{scoretype}_copying_{fname}.json', 'w') as f:
         json.dump(copying_rankings, f)
 
 

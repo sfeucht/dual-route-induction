@@ -217,6 +217,7 @@ def main(args):
         patched_default_corr += generation_correct(model.tokenizer.decode(generation), original_answer, prnt=False)
         patched_fv_corr += generation_correct(model.tokenizer.decode(generation), fv_answer, prnt=(args.head_ordering == 'fv'))
 
+        ct += 1
         if ct >= args.max_n:
             break 
     
