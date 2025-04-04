@@ -11,6 +11,7 @@ You can also replace CounterFact entities with random tokens using `--random_tok
 Then, run `convert_causal_scores.py` to convert the resulting .pkl files into readable json scores. 
 '''
 import os 
+import json 
 import pickle 
 import argparse 
 import random 
@@ -24,7 +25,17 @@ from collections import defaultdict
 from nnsight import LanguageModel
 from datasets import load_dataset
 
-from utils import pile_chunk
+from utils import pile_chunk, json_tuple_keys, flatidx_to_grididx
+
+def flat_to_dict(flattensor):
+    d = {}
+    for idx in range(len(flattensor)):
+        d[flatidx_to_grididx(idx)] = flattensor[idx].item()
+    return d 
+
+def flat_to_ranking(flattensor):
+    _, idxs = torch.topk(flattensor, k=len(flattensor))
+    return [flatidx_to_grididx(i) for i in idxs]
 
 class ChunkOutputSaver:
     def __init__(self, name, n_heads):
@@ -259,15 +270,35 @@ def main(args):
 
     all_results = [clean_results, corrupt_results, patched_results]
 
-    path = f'../jar/head_patching/{model_name}/'
+    path = f'../cache/causal_scores/{model_name}/'
     path += f'{args.ckpt}/' if args.ckpt is not None else ''
-
-    fname = path + f'len{args.sequence_len}_n{args.n}'
-    fname += '_randoments.pkl' if args.random_tok_entities else '.pkl'
     os.makedirs(path, exist_ok=True)
-    print(fname)
-    with open(fname, 'wb') as f: 
+
+    fname = f'len{args.sequence_len}_n{args.n}'
+    fname += '_randoments' if args.random_tok_entities else ''
+
+    # save all results just in case 
+    print(path + fname + '.pkl')
+    with open(path + fname + '.pkl', 'wb') as f: 
         pickle.dump(all_results, f) 
+    
+    # save important results as json 
+    # convert to dictionaries with (layer, head_idx) tuples
+    scoretype = 'token' if args.random_tok_entities else 'concept'
+
+    diff = patched_results.get_m1() - corrupt_results.get_m1()
+    copying_scores = flat_to_dict(diff)
+    with open(path + f'{scoretype}_copying_{fname}.json', 'w') as f:
+        json.dump(json_tuple_keys(copying_scores), f)
+
+    # save head rankings  
+    rank_path = f'../cache/head_orderings/{model_name}/'
+    rank_path += f'{args.ckpt}/' if args.ckpt is not None else ''
+    os.makedirs(path, exist_ok=True)
+
+    copying_rankings = flat_to_ranking(diff)
+    with open(rank_path + f'{scoretype}_copying.json', 'w') as f:
+        json.dump(copying_rankings, f)
 
 
 if __name__ == '__main__':

@@ -34,7 +34,7 @@ from collections import defaultdict
 from nnsight import LanguageModel
 from datasets import load_dataset
 
-from utils import pile_chunk, get_l2_attn_weights, get_l3_attn_weights, get_olmo2_attn_weights, get_pythia_attn_weights
+from utils import pile_chunk, get_l2_attn_weights, get_l3_attn_weights, get_olmo2_attn_weights, get_pythia_attn_weights, json_tuple_keys
 
 torch.set_grad_enabled(False)
 
@@ -171,11 +171,6 @@ def main(args):
                 # [bsz, n_heads, seq_from, seq_to]
                 attns = retrieve_attention(model, batch_seqs, layer)
 
-                # if drop_bos is true, then zero it out and recalculate attention 
-                # if args.drop_bos:
-                #     attns[:, :, :, 0] = 0 # make every head not attnd to BOS anymore 
-                #     attns /= attns.sum(dim=-1, keepdim=True) # renormalize 
-                
                 # index in and save beginnings, ends 
                 for head in range(model.config.num_attention_heads):
                     next_tok_attn[(layer, head)] += attns[torch.arange(len(attns)), head, -1, start_idxs + pad_offsets].sum().item()
@@ -185,17 +180,17 @@ def main(args):
          
     
     results = {
-        'next_tok_attn' : normalize(next_tok_attn, total_examples),
-        'end_tok_attn' : normalize(end_tok_attn, total_examples)
+        'next_tok_attn' : json_tuple_keys(normalize(next_tok_attn, total_examples)),
+        'end_tok_attn' : json_tuple_keys(normalize(end_tok_attn, total_examples))
     }
 
-    path = f'../jar/attention_scores/{model_name}/'
+    path = f'../cache/attention_scores/{model_name}/'
     path += f'{args.ckpt}/' if args.ckpt is not None else ''
     os.makedirs(path, exist_ok=True)
 
     fname = f'n{args.n}_seqlen{args.sequence_len}'
     fname += f'_randomtokents' if args.random_tok_entities else ''
-    fname += '.pkl'
+    fname += '.json'
     print(path + fname)
 
     with open(path + fname, 'w') as f:
@@ -210,7 +205,7 @@ if __name__ == '__main__':
                  'EleutherAI/pythia-6.9b'])
     parser.add_argument('--ckpt', default=None, type=str)
     parser.add_argument('--n', default=2048, type=int)
-    parser.add_argument('--bsz', default=128, type=int)
+    parser.add_argument('--bsz', default=128, type=int, help='may have bugs with bsz=1.')
     parser.add_argument('--sequence_len', default=30)
     parser.add_argument('--random_tok_entities', action='store_true')
     parser.set_defaults(random_tok_entities=False)

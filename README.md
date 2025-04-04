@@ -26,8 +26,9 @@ As discussed in the paper, we focus on token induction scores over random tokens
 If you want to run any of our code, this repo requires Python 3.10+ and PyTorch 2.6.0+. We use the `nnsight` package (v0.4.3) for all intervention experiments, which itself uses HuggingFace model implementations. Set up a virtual environment using `requirements.txt`:
 
 ```bash
-python3.11 -m venv .env -r requirements.txt
+python3.11 -m venv .env 
 source .env/bin/activate
+pip install -r requirements.txt
 ```
 
 ## Code
@@ -39,8 +40,7 @@ We provide scripts for each of the major experiments in our work. Scripts should
 - e.g., to replicate Figure 11, you would run `python causal_scores.py --model meta-llama/Meta-Llama-3-8B`. 
 - e.g., to replicate Figure 12, you would run `python causal_scores.py --model meta-llama/Meta-Llama-3-8B --random_tok_entities`
 
-`scripts/convert_causal_scores.py` converts results from the previous script into readable json files. We used this script to generate the json files in `cache`. If you use a different `n` or sequence length, you will have to edit this script. 
-- e.g. continuing with the same example, run `python convert_causal_scores.py --model_name Meta-Llama-3-8B` to convert the above results into json files. 
+You can see the results of this script in `cache/causal_scores`. 
 
 ### Section 3: Attention Scores
 `scripts/attention_scores.py` calculates attention-based scores for individual heads [TODO]

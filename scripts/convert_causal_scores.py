@@ -3,11 +3,8 @@ import pickle
 import json 
 import torch 
 
-from utils import flatidx_to_grididx
+from utils import flatidx_to_grididx, json_tuple_keys
 from causal_scores import ChunkOutputSaver
-
-def json_tuple_keys(mapping):
-    return [{'layer':k[0], 'head_idx': k[1], 'score' : v} for k, v in mapping.items()]
 
 def flat_to_dict(flattensor):
     d = {}
@@ -25,7 +22,7 @@ def main(args):
         fname = 'len30_n256' 
     else:
         model_folder = args.model_name
-        fname = 'len30_n1024' 
+        fname = 'len30_n1024'
 
     with open(f'../cache/causal_scores/{model_folder}/{fname}.pkl', 'rb') as f:
         clean, corrupt, patched = pickle.load(f)

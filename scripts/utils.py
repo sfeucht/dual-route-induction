@@ -5,6 +5,9 @@ import math
 import llama 
 import pythia 
 
+def json_tuple_keys(mapping):
+    return [{'layer':k[0], 'head_idx': k[1], 'score' : v} for k, v in mapping.items()]
+
 def pile_chunk(random_len, pile, tok, shuf_pile=True):
     sample = []
     while len(sample) < random_len:
