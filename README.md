@@ -2,11 +2,9 @@
 
 *Code and data for [The Dual-Route Model of Induction](https://dualroute.baulab.info) by Feucht et al. (2025).*
 
-How do LLMs copy meaningful text in-context? We find that in addition to token-level induction heads described in previous work, LLMs develop *concept induction heads* which are be used to copy word meanings (instead of literal tokens). See the full paper for details. 
+How do LLMs copy meaningful text in-context? We find that in addition to token-level induction heads described in previous work, LLMs develop *concept induction heads* which are be used to copy word meanings (instead of literal tokens). Please contact `feucht.s[at]northeastern.edu` for any questions regarding the paper or this repository. 
 
 ![figure1](figure1.png)
-
-Please contact `feucht.s[at]northeastern.edu` for any questions regarding the paper or this repository. 
 
 
 ## Per-Head Scores
