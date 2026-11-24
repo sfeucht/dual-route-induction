@@ -290,7 +290,11 @@ def main(args):
     # convert to dictionaries with (layer, head_idx) tuples
     scoretype = 'token' if args.random_tok_entities else 'concept'
 
-    diff = patched_results.get_m1() - corrupt_results.get_m1()
+    # token copying promotes the first entity token at -2 (m2); concept copying the next one at -1 (m1)
+    if args.random_tok_entities:
+        diff = patched_results.get_m2() - corrupt_results.get_m2()
+    else:
+        diff = patched_results.get_m1() - corrupt_results.get_m1()
     copying_scores = flat_to_dict(diff, n_heads=model.config.num_attention_heads)
     with open(path + f'{scoretype}_copying_{fname}.json', 'w') as f:
         json.dump(json_tuple_keys(copying_scores), f)
